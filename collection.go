@@ -16,6 +16,7 @@ func MakeCollection(list []interface{}) *Collection {
 	}
 }
 
+// KeyBy Key an associative array by a field or using a callback.
 func (c *Collection) KeyBy(key string) (sync.Map, error) {
 	m := sync.Map{}
 	for _, value := range c.list {
@@ -29,4 +30,9 @@ func (c *Collection) KeyBy(key string) (sync.Map, error) {
 		m.Store(k.Interface(), value)
 	}
 	return m, nil
+}
+
+// All Get all of the items in the collection.
+func (c *Collection) All() []interface{} {
+	return c.list
 }

@@ -28,3 +28,14 @@ func TestKeyBy(t *testing.T) {
 		}
 	})
 }
+
+func TestAll(t *testing.T) {
+	list := []interface{}{People{Id: 1, Name: "Albert", Age: 18}, People{Id: 2, Name: "Albert1", Age: 13}}
+	coll := MakeCollection(list)
+
+	for key, value := range coll.All() {
+		if list[key].(People).Id != value.(People).Id {
+			print("The list order is changed")
+		}
+	}
+}
