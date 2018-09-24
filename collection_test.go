@@ -3,6 +3,7 @@ package collection
 import (
 	"testing"
 	"os"
+	"sync"
 )
 
 type People struct {
@@ -21,6 +22,8 @@ func TestKeyBy(t *testing.T) {
 	}
 
 	t.Run("test key by", func(t *testing.T) {
+		i := m.All()
+		m := i.(sync.Map)
 		people, _ := m.Load(1)
 		if (people).(People).Name != "Albert" {
 			print("The people name with Id 1 should be Albert")
@@ -33,7 +36,7 @@ func TestAll(t *testing.T) {
 	list := []interface{}{People{Id: 1, Name: "Albert", Age: 18}, People{Id: 2, Name: "Albert1", Age: 13}}
 	coll := MakeCollection(list)
 
-	for key, value := range coll.All() {
+	for key, value := range coll.All().([]interface{}) {
 		if list[key].(People).Id != value.(People).Id {
 			print("The list order is changed")
 		}
