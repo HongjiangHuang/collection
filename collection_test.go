@@ -56,3 +56,27 @@ func TestRange(t *testing.T) {
 		return true
 	})
 }
+
+func TestWhere(t *testing.T) {
+	list := []interface{}{People{Id: 1, Name: "Albert", Age: 18}, People{Id: 2, Name: "Albert1", Age: 13}}
+	coll := MakeCollection(list)
+
+	coll = coll.Where("Id", "=", 1)
+
+	var i int = 0
+
+	coll.Range(func(key, item interface{}) bool {
+		i++
+		if item.(People).Id != 1 {
+			print("The list order is changed")
+			os.Exit(2)
+		}
+
+		return true
+	})
+
+	if i == 0 {
+		print("No each")
+		os.Exit(2)
+	}
+}
