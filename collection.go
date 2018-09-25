@@ -20,21 +20,23 @@ func MakeCollection(list interface{}) *Collection {
 func (c *Collection) KeyBy(key string) (*Collection, error) {
 	m := sync.Map{}
 
-	switch list := c.list.(type) {
-	case map[interface{}]interface{}:
-	case []interface{}:
-		for _, value := range list {
-			ref := reflect.ValueOf(value)
-			k := reflect.Indirect(ref).FieldByName(key)
+	var err error = nil
 
-			if !k.IsValid() {
-				return MakeCollection(m), errors.New(key + "不存在")
-			}
+	c.Range(func(index, item interface{}) bool {
+		ref := reflect.ValueOf(item)
+		k := reflect.Indirect(ref).FieldByName(key)
 
-			m.Store(k.Interface(), value)
+		if !k.IsValid() {
+			err = errors.New(key + "不存在")
+			return false
 		}
-	}
-	return MakeCollection(m), nil
+
+		m.Store(k.Interface(), item)
+
+		return true
+	})
+
+	return MakeCollection(m), err
 }
 
 // All Get all of the items in the collection.
@@ -46,13 +48,20 @@ func (c *Collection) Range(cb func(key, item interface{}) bool) {
 	switch list := c.list.(type) {
 	case sync.Map:
 		list.Range(cb)
+		break
 	case []interface{}:
+		for key, value := range list {
+			if !cb(key, value) {
+				break
+			}
+		}
 	case map[interface{}]interface{}:
 		for key, value := range list {
 			if !cb(key, value) {
 				break
 			}
 		}
+		break
 	default:
 		panic("Unsupported types")
 	}
