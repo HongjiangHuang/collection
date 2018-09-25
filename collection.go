@@ -42,6 +42,22 @@ func (c *Collection) All() interface{} {
 	return c.list
 }
 
+func (c *Collection) Range(cb func(key, item interface{}) bool) {
+	switch list := c.list.(type) {
+	case sync.Map:
+		list.Range(cb)
+	case []interface{}:
+	case map[interface{}]interface{}:
+		for key, value := range list {
+			if !cb(key, value) {
+				break
+			}
+		}
+	default:
+		panic("Unsupported types")
+	}
+}
+
 //func (c *Collection) operatorForWhere(key interface{}, operator string, value interface{}) func(item interface{}) bool {
 //	return func(item interface{}) bool {
 //		for key, value := range reflect.ValueOf(item).Kind() {

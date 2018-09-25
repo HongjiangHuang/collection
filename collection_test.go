@@ -39,6 +39,20 @@ func TestAll(t *testing.T) {
 	for key, value := range coll.All().([]interface{}) {
 		if list[key].(People).Id != value.(People).Id {
 			print("The list order is changed")
+			os.Exit(2)
 		}
 	}
+}
+
+func TestRange(t *testing.T) {
+	list := []interface{}{People{Id: 1, Name: "Albert", Age: 18}, People{Id: 2, Name: "Albert1", Age: 13}}
+	coll, _ := MakeCollection(list).KeyBy("Id")
+
+	coll.Range(func(key, item interface{}) bool {
+		if key != item.(People).Id {
+			print("The list order is changed")
+			os.Exit(2)
+		}
+		return true
+	})
 }
